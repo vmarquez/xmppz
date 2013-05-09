@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="05571ed2-cb2f-4af7-8848-535bba9676b1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project/plugins.sbt" afterPath="$PROJECT_DIR$/project/plugins.sbt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/xmppz/ConnectionHelper.scala" afterPath="$PROJECT_DIR$/src/main/scala/xmppz/ConnectionHelper.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/xmppz/example/GchatQuickMsg.scala" afterPath="$PROJECT_DIR$/src/main/scala/xmppz/example/GchatQuickMsg.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/scala/xmppz/NettyPlumberTest.scala" afterPath="$PROJECT_DIR$/src/test/scala/xmppz/NettyPlumberTest.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/xmppz/Packet.scala" afterPath="$PROJECT_DIR$/src/main/scala/xmppz/Packet.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/scala/xmppz/PacketCreator.scala" afterPath="$PROJECT_DIR$/src/main/scala/xmppz/PacketCreator.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/scala/xmppz/XMPPTest.scala" afterPath="$PROJECT_DIR$/src/test/scala/xmppz/XMPPTest.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.sbt" afterPath="$PROJECT_DIR$/build.sbt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="xmppz.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -106,7 +99,7 @@
       <file leaf-file-name="MessagePacketCreator.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/xmppz/MessagePacketCreator.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="14" selection-start="1588" selection-end="1588" vertical-scroll-proportion="0.9710744">
+            <state line="47" column="33" selection-start="1613" selection-end="1613" vertical-scroll-proportion="0.9710744">
               <folding />
             </state>
           </provider>
@@ -115,7 +108,7 @@
       <file leaf-file-name="CorePacketCreator.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/xmppz/CorePacketCreator.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="0" selection-start="1785" selection-end="1785" vertical-scroll-proportion="0.0">
+            <state line="46" column="0" selection-start="1890" selection-end="1890" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -124,7 +117,7 @@
       <file leaf-file-name="PacketCreator.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/xmppz/PacketCreator.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="2" selection-start="2287" selection-end="2287" vertical-scroll-proportion="0.0">
+            <state line="75" column="2" selection-start="2318" selection-end="2318" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -851,21 +844,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/xmppz/CorePacketCreator.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="0" selection-start="1785" selection-end="1785" vertical-scroll-proportion="0.0">
+        <state line="46" column="0" selection-start="1890" selection-end="1890" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/xmppz/PacketCreator.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="2" selection-start="2287" selection-end="2287" vertical-scroll-proportion="0.0">
+        <state line="75" column="2" selection-start="2318" selection-end="2318" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/xmppz/MessagePacketCreator.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="14" selection-start="1588" selection-end="1588" vertical-scroll-proportion="0.9710744">
+        <state line="47" column="33" selection-start="1613" selection-end="1613" vertical-scroll-proportion="0.9710744">
           <folding />
         </state>
       </provider>
