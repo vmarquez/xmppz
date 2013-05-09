@@ -23,6 +23,7 @@ object GchatQuickMsg {
 
     val tojid = args(2)
     val msgtext = args.splitAt(3)._2.mkString(" ")
+
     val conn = Connection.create(getConnParams(args(0), args(1)))
    
     // format: OFF

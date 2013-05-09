@@ -71,9 +71,7 @@ class NettyPlumberTest extends FunSuite {
     if (!latch.await(100, TimeUnit.SECONDS)) {
       //testServer.shutdown() 
       assert(false)
-
     }
-
   }
 
   def incoming(p: Seq[Packet]): Unit = {

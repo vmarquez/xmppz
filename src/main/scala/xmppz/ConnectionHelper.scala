@@ -26,7 +26,7 @@ object ConnectionHelper {
       (conn, streamFeatures)  <- conn.get[StreamFeatures]
       (conn, iq)              <- conn.sendGet[IQ](PacketHelper.bindJid(conn.p.authParams.jid))
 
-      myjid                   = iq.collect { case jid: Jid => jid }
+      myjid                   = iq.collect { case jid: Jid => jid } //uh, we might want to lift this so we can return an error if we can't find it
                                 .map(jid => jid.value)
                                 .getOrElse("")
       (conn, iq)              <- conn.sendGet[IQ](PacketHelper.bindSession())

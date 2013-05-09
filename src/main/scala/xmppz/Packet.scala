@@ -32,21 +32,6 @@ object Packet {
 
   val emptystr = ""
 
-  /*
-case class Presence(
-  source: String = "",
-  priority: Int = 1,
-  show: Option[String],
-  status: Option[String] = None,
-  presenceType: Option[String] = None,
-  id: Option[String] = None,
-  to: Option[String] = None,
-  from: Option[String] = None,
-  children: Seq[Packet] = List())
-    extends Packet
-
-  */
-
   def toXmlString(packet: Packet): String = {
     val str =
       packet match {

@@ -73,7 +73,34 @@ class XMPPTest extends XMLTestHelper {
 
     val s = record.collect({ case s: Show => s })
     assert(true)
+  }
+
+  test("stack overflow test") {
+    /*
+    for (i <- List(1 to 10000) {
+        val i = 
+        for {
+            f1 <- Future { 5 }
+            f2 <- Futuer { 6 }
+        } yield (f1 + f2)
+
+        i.foreach(println(_))
+    }*/
+    def innerMethod(f: Future[Int]): Unit = {
+      val newp = new ThreadlessPromise[Int]()
+      for (fi <- f) {
+
+      }
+    }
+    val p = new ThreadlessPromise[Int]()
+
+    //get a message, create a future, pass it in
+    Future {
+      p.success(5)
+    }
+    readLine()
 
   }
+
 }
 

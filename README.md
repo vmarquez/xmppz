@@ -5,7 +5,7 @@ XMPPZ is a small xmpp library for scala.  The goal is an easy to use nonblocking
 ### Usage
 
 ```scala
-
+val conn = Connection.create(getConnParams("username", "password"))
 val result =
       for {
         (conn, myjid)     <- ConnectionHelper.gchatConnect(conn, "xmppzExampleClient")
@@ -16,11 +16,9 @@ val result =
 
 ```
 
-Similar to Finalge, methods on connetion return a Future allowing you to send and send and 'wait' for a particular packet type as the response. 
-You can also send or await separately.  When creating a connection object, you can also pass in a handler for unrequested incoming packets.  
-If something goes wrong the flow will return a left \/ rather than continue.  Composing the connection method calls will also accumulate a list of
-LogMsg objects.  For a full example of how to use xmppz, see xmppz.example.GchatQuickMsg.scala.
-
+Similar to Finalge, methods on connection return a Future allowing you to send and send and 'wait' for a particular packet type as the response. There are also methods
+for awaiting, or sending asyncronously. When creating a connection object, you can also pass in a handler for unrequested incoming packets, so we are not constrained to the 
+request/response model.  
 
 
 ### TODO
