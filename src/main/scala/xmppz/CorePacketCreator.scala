@@ -2,7 +2,8 @@ package xmppz
 
 import scala.xml.pull._
 
-object CorePacketCreator extends CreatorHelper {
+object CorePacketCreator extends BaseCreator {
+
   import PacketCreator._
 
   private val iqparse: PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet] = {
@@ -13,7 +14,6 @@ object CorePacketCreator extends CreatorHelper {
         case Some("result") if !(roster.isEmpty) =>
           val items = roster.collect { case item: Item => item }
           Roster(source = evStart.toString, contacts = items.toList)
-
         case _ =>
           IQ(source = evStart.toString,
             id = attribute("id").getOrElse(""),
@@ -102,8 +102,15 @@ object CorePacketCreator extends CreatorHelper {
   private val jidParse: PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet] =
     {
       case (_, "jid") => (evStart: EvElemStart, children: Seq[Packet]) =>
-        val txt = children.collect({ case m: MessageBody => m.msg })
+        println(" YAY ok we're here children = " + children)
+        val txt = children.collect({
+          case m: MessageBody => {
+            println(" ---------------------------------------------- jid ----------------")
+            m.msg
+          }
+        })
           .headOption
+        println(" Teeeeext = " + txt)
         Jid(source = evStart.toString, value = txt.getOrElse(""))
     }
 
@@ -122,13 +129,6 @@ object CorePacketCreator extends CreatorHelper {
       Group(source = evStart.toString, groupname = txt)
   }
 
-  private val unknownParse: PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet] = {
-    case (_, name) => (evStart: EvElemStart, children: Seq[Packet]) =>
-      UnknownPacket(source = evStart.toString,
-        name = name,
-        children = children)
-  }
-
   def getMatchers =
     List[PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet]](
       iqparse,
@@ -145,7 +145,6 @@ object CorePacketCreator extends CreatorHelper {
       bindParse,
       jidParse,
       queryParse,
-      groupParse,
-      unknownParse
+      groupParse
     )
 }

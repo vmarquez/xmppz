@@ -3,7 +3,9 @@ package xmppz
 import scala.xml.pull._
 //import util._
 
-object MessagePacketCreator extends CreatorHelper {
+object MessagePacketCreator extends BaseCreator {
+  import PacketCreator._
+
   def getMatchers =
     List[PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet]](
       messageParse,

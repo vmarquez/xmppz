@@ -7,7 +7,7 @@ case class Message(
   body: Option[String] = None,
   subject: Option[String] = None,
   thread: Option[String] = None,
-  messageType: String = "normal", //fixme
+  messageType: String = "chat",
   to: String,
   priority: Int = 1,
   from: Option[String] = None,
