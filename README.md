@@ -1,6 +1,6 @@
 ## XMPPZ 
 
-XMPPZ is a small xmpp library for scala.  The goal is an easy to use nonblocking, functional API.  By default, ZMPPZ uses netty for underlying network IO.
+XMPPZ is a small xmpp library for scala.  The goal is an easy to use nonblocking, functional API.  By default, XMPPZ uses netty for underlying network IO.
 
 ### Sample Usage 
 
@@ -28,7 +28,7 @@ return true if they were able to successfully handle the incoming data.
 
 
 
-```ala
+```scala
 def getConnParams(user: String, pass: String): ConnectionParams = {
     val encoded = SASLHandler.getAuthTextPlain(user, pass, host)
     ConnectionParams(AuthCredentials(user, "gmail.com", host, port, encoded),
@@ -65,7 +65,6 @@ A detailed example of the various uses of these are found in the [ConnectionHelp
       (conn, iq)              <- conn.sendGet[IQ](PacketHelper.bindSession())
       (conn, roster)          <- conn.sendGet[Roster](PacketHelper.getRoster())
       conn                    <- conn.send(Presence(priority = 1, status = Some(presenceStatus), id = Some("fixme?")))
-      //todo: check if stream features requires a session?
       } yield {
         (conn, myjid)  
       }
