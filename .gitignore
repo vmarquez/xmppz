@@ -19,4 +19,5 @@ project/boot/
 project/plugins/project/
 .settings/
 .idea/
-.idea
+.idea_modules/
+
