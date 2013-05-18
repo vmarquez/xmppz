@@ -28,7 +28,7 @@ return true if they were able to successfully handle the incoming data.
 
 
 
-'''scala
+```ala
 def getConnParams(user: String, pass: String): ConnectionParams = {
     val encoded = SASLHandler.getAuthTextPlain(user, pass, host)
     ConnectionParams(AuthCredentials(user, "gmail.com", host, port, encoded),
@@ -38,12 +38,12 @@ def getConnParams(user: String, pass: String): ConnectionParams = {
         true //this indicates we've successfully handled this packet type, and there is no need to look for a corresponding request 
       })
   }
-'''
+```
 
 Connetion instances support three separate methods: send, sendGet, and get, the latter two being asynchronous and awaiting the appropriate polymorphic packet type. 
 A detailed example of the various uses of these are found in the [ConnectionHelper](https://github.com/vmarquez/xmppz/blob/master/src/main/scala/xmppz/ConnectionHelper.scala) class.
 
-'''scala
+```scala
     for {
       conn                    <- conn.send("<?xml version='1.0'?>") //you can send a packet or raw XML with the send method
       (conn, streamStart)     <- conn.sendGet[StreamStart](StreamStart(domain = conn.p.authParams.domain)) //if another packet returns and is not handled by the function passed to the plumber, this will return a '\/.left' with an error
@@ -69,18 +69,18 @@ A detailed example of the various uses of these are found in the [ConnectionHelp
       } yield {
         (conn, myjid)  
       }
-'''
+```
 
 Logging is done at every step to help with debugging and/or programatic inspection.  In our first bit of code, we assinged the result of our cmprehension to a value named 'result'. 
 Here, we show how to print the logs generated to the screen:
 
-'''scala
+```scala
 result.handleLogs(logs =>
       logs.foreach { log =>
         println("Thread [" + log.thread + "] Object [" + log.caller.map(c => c.p.authParams.jid + c.hashCode).getOrElse("") + "] msg=[" + log.msg + "]")
       }
     )
-'''
+```
 
 
 
