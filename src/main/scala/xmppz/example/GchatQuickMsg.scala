@@ -29,7 +29,7 @@ object GchatQuickMsg {
     // format: OFF
     val result =
       for {
-        (conn, myjid)     <- ConnectionHelper.gchatConnect(conn, "xmppzExampleClient")
+        (conn, myjid)     <- ConnectionHelper.saslConnect(conn, "xmppzExampleClient")
         (conn, presence)  <- conn.sendGet[Presence](Presence(from=Some(myjid), to=Some(tojid), presenceType=Some("probe")))
         conn              <- conn.send(Message(body=Some(msgtext), to=tojid, from=Some(myjid)))
         conn              <- conn.send(StreamEnd())

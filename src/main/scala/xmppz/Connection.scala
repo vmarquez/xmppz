@@ -63,6 +63,7 @@ object Connection {
         println("fatal exception = " + ex)
     }
   }
+
   //we might want a way to timeout some of these 
   protected[xmppz] def incoming[T <: Packet](log: List[LogMsg[Connection]], packet: T)(connectionHash: String): Unit = {
     try {

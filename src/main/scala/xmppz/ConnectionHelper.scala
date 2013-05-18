@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext
 object ConnectionHelper {
 
   // format: OFF
-  def gchatConnect(conn: Connection, presenceStatus: String)(implicit ec: ExecutionContext) =
+  def saslConnect(conn: Connection, presenceStatus: String)(implicit ec: ExecutionContext) =
     for {
       conn                    <- conn.send("<?xml version='1.0'?>")
       (conn, streamStart)     <- conn.sendGet[StreamStart](StreamStart(domain = conn.p.authParams.domain))
