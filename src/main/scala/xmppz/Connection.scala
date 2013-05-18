@@ -24,8 +24,12 @@ object Connection {
   val connMap = new ConcurrentHashMap[String, Connection]()
 
   def create(p: ConnectionParams): Connection = {
-    val incomingFunc: Seq[Packet] => Unit = incomingPackets => incomingPackets.foreach(incoming(_)(p.authParams.toString))
-    val incomingError: ConnectionError => Unit = error => Connection.incomingError(error, p.authParams.toString)
+    val incomingFunc: (List[LogMsg[Connection]], Seq[Packet]) => Unit = (logs, incomingPackets) => {
+      incomingPackets.headOption.foreach(incoming(logs, _)(p.authParams.toString))
+      incomingPackets.safeTail.foreach(incoming(List[LogMsg[Connection]](), _)(p.authParams.toString))
+    }
+    //TODO: handle logging here too
+    val incomingError: (List[LogMsg[Connection]], ConnectionError) => Unit = (logs, error) => Connection.incomingError(error, p.authParams.toString)
 
     try {
       p.plumber.run(incomingFunc, incomingError)
@@ -60,7 +64,7 @@ object Connection {
     }
   }
   //we might want a way to timeout some of these 
-  protected[xmppz] def incoming[T <: Packet](packet: T)(connectionHash: String): Unit = {
+  protected[xmppz] def incoming[T <: Packet](log: List[LogMsg[Connection]], packet: T)(connectionHash: String): Unit = {
     try {
       val conn = connMap.get(connectionHash)
       val m = Manifest.singleType(packet)
@@ -74,7 +78,7 @@ object Connection {
           //gross, casting.  HELP!
           val pc = packetCondition.promise.asInstanceOf[ThreadlessPromise[(List[LogMsg[Connection]], \/[(Connection, ConnectionError), (Connection, T)])]]
           //println(connectionHash + " received a " + packet.toString)
-          pc.success((List[LogMsg[Connection]](packetCondition.log), (newconn, packet).right)) //append more things to the log!
+          pc.success((List[LogMsg[Connection]](packetCondition.log) ::: log, (newconn, packet).right)) //append more things to the log!
 
         case Some(packetCondition) =>
           if (!conn.p.incomingNoMatch(packet)) {
@@ -123,8 +127,6 @@ EitherT[WriterT[Future...]...]
 */
 case class Connection(p: ConnectionParams,
     condition: Option[PacketCondition[_ <: Packet]] = None) {
-
-  import Connection._
 
   def sendGet[T <: Packet](packet: Packet)(implicit m: Manifest[T]): EitherT[WriterFuture, (Connection, ConnectionError), (Connection, T)] = {
     val promise = new ThreadlessPromise[(List[LogMsg[Connection]], \/[(Connection, ConnectionError), (Connection, T)])]

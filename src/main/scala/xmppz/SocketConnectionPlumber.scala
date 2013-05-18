@@ -13,7 +13,6 @@ import util._
 /*
 
   THIS ISN'T WORKING.  Could not get SSL to function correctly.  Suggestions? 
-*/
 
 //Mutability hurts my soul, maybe this should be a case class that always returns a new state, and the connection holding it would also copy...
 object SocketConnectionPlumber {
@@ -125,4 +124,4 @@ object X509Helper {
 
   }
 }
-
+*/

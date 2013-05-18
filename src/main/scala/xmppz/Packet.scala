@@ -10,9 +10,9 @@ trait Packet {
     first match {
       case Some(f) => Some(f)
       case None => children
-        .toSeq
+        .toStream
         .map(child => child.collect[T](pf))
-        .collect { case Some(x) => x }
+        .flatten
         .headOption
     }
   }
@@ -36,10 +36,16 @@ object Packet {
     val str =
       packet match {
         case iq: IQ =>
-          val str = new StringBuilder()
           ("<iq id='" + iq.id + "' type='" + iq.iqType + "'>" + getChildren(iq.children) + "</iq>").toString
         case message: Message =>
-          (<message to={ message.to } from={ message.from.getOrElse("") } subject={ message.subject.getOrElse(emptystr) } type={ message.messageType } xml:lang='en'><body>{ message.body.getOrElse(emptystr) }</body></message>).toString
+          val str = new StringBuilder()
+          str.append("<message type='" + message.messageType + "' to='" + message.to + "'")
+          str.append(message.from.map(f => " from='" + f + "'").getOrElse(""))
+          str.append(" xml:lang='en'>") //TODO: add lang as a message property
+          str.append(message.subject.map(s => "<subject>" + s + "</subject>").getOrElse(""))
+          str.append("<body>" + message.body.getOrElse("") + "</body>")
+          str.append("</message>")
+          str.toString
         //	  	  	(<message to={message.to} from={message.from.getOrElse(emptystr)} subject={message.subject.getOrElse(emptystr)} type={message.messageType} xml:lang='en'><body>{message.body.getOrElse(emptystr)}</body></message>).toString
         case presence: Presence =>
           val str = new StringBuilder()

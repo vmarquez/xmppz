@@ -16,20 +16,12 @@ import org.jboss.netty.channel.{
 import org.jboss.netty.bootstrap.ClientBootstrap
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory
 import org.jboss.netty.handler.codec.string.StringEncoder
-
-import org.jboss.netty.handler.codec.frame.FrameDecoder
-import org.jboss.netty.buffer.ChannelBuffer
-import java.io.{ PipedInputStream, PipedOutputStream }
-import scala.io.Source
-import scala.xml.pull.XMLEventReader
-import scala.xml.pull.XMLEvent
+import xmppz.util.LogMsg
 import java.util.concurrent.Executors
 import org.jboss.netty.handler.ssl.SslHandler
 import java.net.InetSocketAddress
-import javax.net.ssl.{ SSLEngine, SSLContext }
-import java.lang.StringBuilder
+import javax.net.ssl.{ SSLContext }
 import scalaz._
-import Scalaz._
 
 import xmppz._
 
@@ -37,9 +29,9 @@ object NettyConnectionPlumber {
 
   def apply(addr: InetSocketAddress) = new ConnectionPlumber {
 
-    var incomingEventHandler: Option[Seq[Packet] => Unit] = None
+    var incomingEventHandler: Option[(List[LogMsg[Connection]], Seq[Packet]) => Unit] = None
 
-    var incomingErrorHandler: Option[ConnectionError => Unit] = None
+    var incomingErrorHandler: Option[(List[LogMsg[Connection]], ConnectionError) => Unit] = None
 
     val bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(Executors.newCachedThreadPool, Executors.newCachedThreadPool))
 
@@ -58,17 +50,16 @@ object NettyConnectionPlumber {
     val eventDecoder = new EventDecoder(PacketCreator())
     pipeline.addLast("eventdecoder", eventDecoder)
     pipeline.addLast("stringencoder", new StringEncoder)
-    pipeline.addLast("handler", new XMLEventClientHandler((packets: Seq[Packet]) =>
-      incomingEventHandler.foreach(_(packets)),
-      (err: ConnectionError) => incomingErrorHandler.foreach(_(err))
+    pipeline.addLast("handler", new XMLEventClientHandler(
+      (l: List[LogMsg[Connection]], packets: Seq[Packet]) => incomingEventHandler.foreach(_(l, packets)),
+      (l: List[LogMsg[Connection]], err: ConnectionError) => incomingErrorHandler.foreach(_(l, err))
     ))
-
     bootstrap.setPipelineFactory(new ChannelPipelineFactory {
       override def getPipeline: ChannelPipeline =
         pipeline
     })
 
-    override def run(f: Seq[Packet] => Unit, errorf: ConnectionError => Unit): Unit = {
+    override def run(f: (List[LogMsg[Connection]], Seq[Packet]) => Unit, errorf: (List[LogMsg[Connection]], ConnectionError) => Unit): Unit = {
       incomingEventHandler = Some(f)
       incomingErrorHandler = Some(errorf)
       val future: ChannelFuture = bootstrap.connect(addr)
@@ -103,24 +94,23 @@ object NettyConnectionPlumber {
   }
 }
 
-class XMLEventClientHandler(incoming: Seq[Packet] => Unit, errorf: ConnectionError => Unit) extends SimpleChannelUpstreamHandler {
+class XMLEventClientHandler(incoming: (List[LogMsg[Connection]], Seq[Packet]) => Unit, errorf: (List[LogMsg[Connection]], ConnectionError) => Unit) extends SimpleChannelUpstreamHandler {
 
   override def channelConnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) {}
 
   override def messageReceived(ctx: ChannelHandlerContext, e: MessageEvent) {
     try {
       val m = e.getMessage()
-      val events = m.asInstanceOf[\/[ConnectionError, Seq[Packet]]]
+      val events = m.asInstanceOf[\/[(List[LogMsg[Connection]], ConnectionError), (List[LogMsg[Connection]], Seq[Packet])]]
       events match {
-        case \/-(p) =>
-          incoming(p)
-        case -\/(err) =>
-          println("error = " + err)
-          errorf(err)
+        case \/-(tup) =>
+          incoming(tup._1, tup._2)
+        case -\/(tup) =>
+          errorf(tup._1, tup._2)
       }
     } catch {
       case ex: Exception =>
-        errorf(ConnectionError(message = "error in XMLEventClientHandler", exception = Some(ex))) //fixme: but what now?
+        errorf(List[LogMsg[Connection]](), ConnectionError(message = "error in XMLEventClientHandler", exception = Some(ex))) //fixme: but what now?
     }
   }
 

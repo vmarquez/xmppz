@@ -1,37 +1,15 @@
 package xmppz
-import scala.xml.pull._
-import scala.io.Source
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import java.net.InetSocketAddress
-import org.jboss.netty.buffer.{ ChannelBuffers, ChannelBuffer }
-import org.jboss.netty.channel.{
-  Channel,
-  ChannelPipeline,
-  Channels,
-  ChannelEvent,
-  DefaultChannelPipeline,
-  ChannelHandlerContext,
-  ChannelState,
-  ChannelStateEvent,
-  ExceptionEvent,
-  MessageEvent,
-  SimpleChannelUpstreamHandler,
-  WriteCompletionEvent,
-  ChannelFuture,
-  ChannelPipelineFactory
-}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import ExecutionContext.Implicits.global
 import org.scalatest.FunSuite
-import org.jboss.netty.bootstrap.ClientBootstrap
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.CountDownLatch
-import java.io.{ PipedInputStream, PipedOutputStream }
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import netty._
+import util.LogMsg
 
 @RunWith(classOf[JUnitRunner])
 class NettyPlumberTest extends FunSuite {
@@ -68,19 +46,20 @@ class NettyPlumberTest extends FunSuite {
     testServer.writeToClient(str2.substring(0, 50))
     testServer.writeToClient(str2.substring(50, str2.length))
     println("done writing to client.........")
-    if (!latch.await(100, TimeUnit.SECONDS)) {
+    if (!latch.await(20, TimeUnit.SECONDS)) {
       //testServer.shutdown() 
       assert(false)
     }
   }
 
-  def incoming(p: Seq[Packet]): Unit = {
+  def incoming(log: List[LogMsg[Connection]], p: Seq[Packet]): Unit = {
+    println("p = " + p)
     packets = packets ++ p
     if (packets.size > 0)
       latch.countDown()
   }
 
-  def error(cerror: ConnectionError) =
+  def error(log: List[LogMsg[Connection]], cerror: ConnectionError) =
     println(cerror.message.toString)
 }
 

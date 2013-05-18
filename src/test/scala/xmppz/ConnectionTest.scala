@@ -19,6 +19,8 @@ class ConnectionTest extends FunSuite {
 
   implicit val ec = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
 
+  val emptyLog = List[LogMsg[Connection]]()
+
   def getTestParams = ConnectionParams(AuthCredentials("", "", "", 3, ""),
     plumber = emptyReader(),
     incomingNoMatch = packet => {
@@ -47,11 +49,11 @@ class ConnectionTest extends FunSuite {
     // format: ON
     println("here, about to send the incoming events")
     Future {
-      Connection.incoming(packetUpcaster(StreamStart(domain = "")))(conn.id)
+      Connection.incoming(emptyLog, packetUpcaster(StreamStart(domain = "")))(conn.id)
       Thread.sleep(300)
-      Connection.incoming(packetUpcaster(ProceedTLS()))(conn.id)
+      Connection.incoming(emptyLog, packetUpcaster(ProceedTLS()))(conn.id)
       Thread.sleep(300)
-      Connection.incoming(packetUpcaster(StreamStart(domain = "")))(conn.id)
+      Connection.incoming(emptyLog, packetUpcaster(StreamStart(domain = "")))(conn.id)
     }
     assert(finishedLatch.await(10, TimeUnit.SECONDS))
   }
@@ -71,11 +73,11 @@ class ConnectionTest extends FunSuite {
         }
     //format: ON
     Future {
-      Connection.incoming(packetUpcaster(StreamStart(domain = "")))(conn.id)
+      Connection.incoming(emptyLog, packetUpcaster(StreamStart(domain = "")))(conn.id)
       Thread.sleep(100) //since this could outrun the other thread
-      Connection.incoming(packetUpcaster(ProceedTLS()))(conn.id)
+      Connection.incoming(emptyLog, packetUpcaster(ProceedTLS()))(conn.id)
       Thread.sleep(100)
-      Connection.incoming(packetUpcaster(StreamFeatures()))(conn.id)
+      Connection.incoming(emptyLog, packetUpcaster(StreamFeatures()))(conn.id)
       Thread.sleep(100)
     }
     finishedLatch.await()
@@ -84,7 +86,7 @@ class ConnectionTest extends FunSuite {
   }
 
   def emptyReader() = new ConnectionPlumber {
-    def run(f: Seq[Packet] => Unit, ef: ConnectionError => Unit) = println("running")
+    def run(f: (List[LogMsg[Connection]], Seq[Packet]) => Unit, ef: (List[LogMsg[Connection]], ConnectionError) => Unit) = println("running")
 
     def switchToTLS() = println("switch to tls")
 
