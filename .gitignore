@@ -18,4 +18,5 @@ target/
 project/boot/
 project/plugins/project/
 .settings/
+.idea/
 .idea
