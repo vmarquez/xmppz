@@ -44,9 +44,9 @@ object Packet {
           str.append(" xml:lang='en'>") //TODO: add lang as a message property
           str.append(message.subject.map(s => "<subject>" + s + "</subject>").getOrElse(""))
           str.append("<body>" + message.body.getOrElse("") + "</body>")
+          str.append(message.children.map(toXmlString(_)).foldLeft("")(_ + _))
           str.append("</message>")
           str.toString
-        //	  	  	(<message to={message.to} from={message.from.getOrElse(emptystr)} subject={message.subject.getOrElse(emptystr)} type={message.messageType} xml:lang='en'><body>{message.body.getOrElse(emptystr)}</body></message>).toString
         case presence: Presence =>
           val str = new StringBuilder()
           str.append("<presence")
@@ -57,6 +57,16 @@ object Packet {
           str.append(presence.show.map(s => "<show>" + s + "</show>").getOrElse(""))
           str.append(presence.status.map(s => "<status>" + s + "</status>").getOrElse(""))
           str.append("</presence>")
+          str.toString
+
+        case delay: Delay =>
+          val str = new StringBuilder
+          str.append("<delay")
+          str.append(" stamp ='" + delay.stamp + "'")
+          str.append(delay.from.map(s => " from='" + s + "'").getOrElse(""))
+          str.append(">")
+          str.append(delay.body.getOrElse(""))
+          str.append("</delay>")
           str.toString
 
         case streamFeature: StreamFeatures =>

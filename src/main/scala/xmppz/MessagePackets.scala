@@ -1,6 +1,7 @@
 package xmppz
 
 import java.util.UUID
+import org.joda.time.{ DateTime, DateTimeZone }
 
 case class Message(
   source: String = "",
@@ -14,6 +15,13 @@ case class Message(
   id: String = UUID.randomUUID().toString,
   children: Seq[Packet] = List())
     extends Packet
+
+case class Delay( //from xep-0203
+  source: String = "generated",
+  from: Option[String] = None,
+  stamp: DateTime = new DateTime(DateTimeZone.UTC),
+  body: Option[String] = None,
+  children: Seq[Packet] = List()) extends Packet
 
 case class Presence(
   source: String = "",

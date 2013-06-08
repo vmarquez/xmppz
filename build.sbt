@@ -18,4 +18,8 @@ libraryDependencies += "org.jboss.netty" % "netty" % "3.2.7.Final" % "compile"
 
 libraryDependencies +=  "org.slf4j" % "slf4j-api" % "1.6.1" % "compile"
 
+libraryDependencies += "joda-time" % "joda-time" % "2.1"
+
+libraryDependencies += "org.joda" % "joda-convert" % "1.2"
+
 scalariformSettings

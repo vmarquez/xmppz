@@ -12,14 +12,10 @@ import Scalaz._
 import xmppz._
 import java.util.concurrent.{ TimeUnit, CountDownLatch }
 
-import scalaz.OptionT._
-import scalaz.std.list.listMonoid
-import scalaz.std.option.optionInstance
-
-import util.PromiseT._
-
 import util.Log._
 import util._
+import java.util.concurrent.atomic.AtomicReference
+import scalaz.effect.IO
 
 @RunWith(classOf[JUnitRunner])
 class ThreadlessPromiseTest extends FunSuite {

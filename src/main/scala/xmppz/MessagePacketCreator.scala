@@ -1,7 +1,7 @@
 package xmppz
 
 import scala.xml.pull._
-//import util._
+import org.joda.time.DateTime
 
 object MessagePacketCreator extends BaseCreator {
   import PacketCreator._
@@ -19,7 +19,8 @@ object MessagePacketCreator extends BaseCreator {
       photoParse,
       showParse,
       cParse,
-      priorityParse
+      priorityParse,
+      delayParse
 
     )
 
@@ -27,6 +28,7 @@ object MessagePacketCreator extends BaseCreator {
     case (_, "message") => (evStart: EvElemStart, children: Seq[Packet]) => {
       implicit val ev = evStart
       val txt = children.collect({ case m: MessageBody => m.msg })
+      val delay = children.collect({ case d: Delay => d })
       Message(
         source = evStart.toString,
         body = txt.headOption,
@@ -35,7 +37,9 @@ object MessagePacketCreator extends BaseCreator {
         messageType = attribute("type").getOrElse(""),
         to = attribute("to").getOrElse(""), //should we ignore the whole message? probably... 
         from = attribute("from"),
-        id = attribute("id").getOrElse(""))
+        id = attribute("id").getOrElse(""),
+        children = delay
+      )
 
     }
   }
@@ -137,5 +141,18 @@ object MessagePacketCreator extends BaseCreator {
       Priority(source = evStart.toString,
         value = Integer.parseInt(children.collect { case m: MessageBody => m.msg }.headOption.getOrElse("")))
   }
+
+  private val delayParse: PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet] = {
+    case (_, "delay") => (evStart: EvElemStart, children: Seq[Packet]) => {
+      implicit val ev = evStart
+      val txt = children.collect { case m: MessageBody => m.msg }.headOption
+      Delay(source = evStart.toString,
+        body = txt,
+        from = attribute("from"),
+        stamp = DateTime.parse(attribute("stamp").getOrElse(""))
+      )
+    }
+  }
+
 }
 
