@@ -50,8 +50,6 @@ class XMPPTest extends XMLTestHelper {
       assert(false)
   }
 
-
-
   def parseString(str: String, f: List[Packet] => Boolean): CountDownLatch = {
     implicit var ec: ExecutionContext = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
     val endLatch = new CountDownLatch(1)
@@ -61,11 +59,10 @@ class XMPPTest extends XMLTestHelper {
         Iterator.continually { foreverLatch.await(); '\n' }.take(1) ++
         "</stream:stream>".iterator
     }
-    val parser = XMLParser(PacketCreator(), true)
     val eventparser = new XMLEventReader(src)
     val events = List[XMLEvent]()
     Future {
-      val ret = PacketReader(events, eventparser)
+      val ret = PacketReader(events, eventparser, XMLParser(PacketCreator(), true))
       if (f(ret._2)) {
         endLatch.countDown()
       }

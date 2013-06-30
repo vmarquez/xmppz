@@ -14,6 +14,7 @@ import util._
 import org.jboss.netty.handler.codec.frame.FrameDecoder
 import PacketCreator.MessageBody
 import util.LogMsg
+import packet.PacketReader
 
 //TODO: should we return an Either[Seq[T],Exception], along iwth Logs!
 //should be an XMLDecoder and take a factory for generating XML
@@ -47,8 +48,15 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
       run = true
 
       incomingData = new String(arr)
+      println("incoming data =" + incomingData)
       //TODO: send up a list of List[LogMsg]
       logs = logs :+ Log[Connection]("TRACE", incomingData)
+      val t = PacketReader(xmlevents, xmlEventListener, parser)
+      xmlevents = t._1
+      packets = packets ::: t._2
+      println("Packets = " + packets)
+
+      /*
       //better way to do this? 
       while (run || xmlEventListener.available) { //or because sometimes the eventLisetener takes a bit to start reading the stream...
         if (xmlEventListener.available) {
@@ -66,7 +74,8 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
           Thread.sleep(200) //again, maybe something's still happening... 
 
         run = false //we got something, so we only want to grab more if the EventReader has more to give us because next blocks forever...
-      }
+      }*/
+      println("DONE HERE")
     } catch {
       case ex: Exception =>
         val fmt = formatStr(packets)
