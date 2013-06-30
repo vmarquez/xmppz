@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import scala.xml._
 import scala.xml.pull._
 import util._
-
+import packet._
 @RunWith(classOf[JUnitRunner])
 class NodeParsingTest extends XMLTestHelper {
 

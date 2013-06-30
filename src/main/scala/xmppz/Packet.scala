@@ -1,7 +1,7 @@
 package xmppz
-
+import packet._
 trait Packet {
-  def source: String
+  def source: String = ""
   def children: Seq[Packet]
 
   //TODO: make tail recursive?

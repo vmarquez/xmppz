@@ -1,20 +1,18 @@
 package xmppz
 
-import java.net._
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.joda.time.DateTime
 import scala.xml.pull._
-import java.util.concurrent.CountDownLatch
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.{ Executors, CountDownLatch, TimeUnit }
+import scala.concurrent.{ ExecutionContext, Future }
 import util._
+import packet._
 
 @RunWith(classOf[JUnitRunner])
 class XMPPTest extends XMLTestHelper {
 
-  val messagePacket = Message(source = "", body = Some("hey dude check out this xmpp stuff"),
+  val messagePacket = Message(body = Some("hey dude check out this xmpp stuff"),
     to = "justin@andbit.net", from = Some("vincent.marquez@gmail.com"),
     subject = Some("xmpp lib"),
     children = List[Packet](Delay(stamp = DateTime.parse("2002-09-10T23:08:25Z"), from = Some("vincent.marquez@gmail.com"))),
@@ -52,7 +50,10 @@ class XMPPTest extends XMLTestHelper {
       assert(false)
   }
 
+
+
   def parseString(str: String, f: List[Packet] => Boolean): CountDownLatch = {
+    implicit var ec: ExecutionContext = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
     val endLatch = new CountDownLatch(1)
     val foreverLatch = new CountDownLatch(1)
     val src = new io.Source {
@@ -62,24 +63,12 @@ class XMPPTest extends XMLTestHelper {
     }
     val parser = XMLParser(PacketCreator(), true)
     val eventparser = new XMLEventReader(src)
-    var events = List[XMLEvent]()
+    val events = List[XMLEvent]()
     Future {
-      while (eventparser.available) {
-        val n = eventparser.next
-        events = events :+ n
-
-        parser.run(events) match {
-          case None =>
-          case Some((a, b)) =>
-            events = a
-            if (f(b)) {
-              endLatch.countDown()
-            }
-        }
+      val ret = PacketReader(events, eventparser)
+      if (f(ret._2)) {
+        endLatch.countDown()
       }
-      Thread.sleep(1000)
-      //foreverLatch.countDown()
-      println("finished looping, has next")
     }
     endLatch
   }

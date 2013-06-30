@@ -13,6 +13,7 @@ import scalaz.WriterT
 import scalaz.WriterT._
 import scalaz._
 import Scalaz._
+import packet._
 
 @RunWith(classOf[JUnitRunner])
 class ConnectionTest extends FunSuite {

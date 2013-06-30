@@ -31,6 +31,7 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
     outputStream.close()
   }
 
+  //TODO: MAKE FUNCTIONAL
   //returns an XMLEvent  TODO: LoGGING HERE!
   //So we have some interesting options here. we could return an eitehrT[Writer, or just a \/ of tuples...
   override def decode(ctx: ChannelHandlerContext, channel: Channel, buf: ChannelBuffer): \/[(List[LogMsg[Connection]], ConnectionError), (List[LogMsg[Connection]], Seq[T])] = {

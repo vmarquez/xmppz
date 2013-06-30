@@ -2,19 +2,21 @@ package xmppz
 
 import scala.xml.pull._
 import util._
+import packet._
+trait BaseCreator {
 
-/*
-TODO: redesign to make this modular.  Should have each packet PF's in a separate object for each RFC, along with their case statements
-finally, we should construct a final PacketCreator out of a collection of case statements from each RFC we want to be able to parse:
+  def getMatchers: List[PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet]]
 
-*/
+  def attribute(str: String)(implicit start: EvElemStart) =
+    start.attrs.asAttrMap.get(str)
+}
+
 object PacketCreator {
 
   private val unknownParse: PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet] = {
     case (_, name) => (evStart: EvElemStart, children: Seq[Packet]) =>
       println("Name = " + name)
-      UnknownPacket(source = evStart.toString,
-        name = name,
+      UnknownPacket(name = name,
         children = children)
   }
 
@@ -39,7 +41,7 @@ object PacketCreator {
         }
 
       def apply(txt: String): Packet = {
-        MessageBody(txt, txt)
+        MessageBody(txt)
       }
 
       def apply(packets: Seq[Packet]) = f.foreach(_(packets))
@@ -51,26 +53,21 @@ object PacketCreator {
     }
   }
   case class MessageBody(
-    source: String,
     msg: String,
     children: Seq[Packet] = List[Packet]()) extends Packet
 
   case class Required(
-    source: String,
     children: Seq[Packet] = List[Packet]()) extends Packet
 
   case class StartTLS(
-    source: String = "",
     required: Boolean = false,
     children: Seq[Packet] = List[Packet]()) extends Packet
 
   case class Mechanisms(
-    source: String = "",
     mechanisms: Seq[Mechanism],
     children: Seq[Packet] = List[Packet]()) extends Packet
 
   case class Group(
-    source: String = "",
     groupname: String = "",
     children: Seq[Packet] = List[Packet]())
       extends Packet

@@ -2,15 +2,17 @@ package xmppz
 
 import netty._
 import util._
-import java.io.{ BufferedInputStream, BufferedOutputStream }
 import scala.concurrent.ExecutionContext
 import scalaz._
 import Scalaz._
 import xmppz._
 import java.net.InetSocketAddress
 import java.util.concurrent.CountDownLatch
+import packet._
 
 object GchatQuickMsg {
+
+  import packet.CorePackets._
 
   val host = "talk.google.com"
   val port = 5222
