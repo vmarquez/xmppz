@@ -54,28 +54,7 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
       val t = PacketReader(xmlevents, xmlEventListener, parser)
       xmlevents = t._1
       packets = packets ::: t._2
-      println("Packets = " + packets)
 
-      /*
-      //better way to do this? 
-      while (run || xmlEventListener.available) { //or because sometimes the eventLisetener takes a bit to start reading the stream...
-        if (xmlEventListener.available) {
-          val next = xmlEventListener.next()
-          xmlevents = xmlevents :+ next
-          parser.run(xmlevents) match { //if we get a whole packet we'll get Some, otherwise None, we need more data!
-            case Some((ev, p)) =>
-              xmlevents = ev //set our leftover xml events to what is still needing to be processed. stateT is amazing!
-              packets = packets ::: p
-            case None =>
-              if (!xmlEventListener.available) //maybe it's still going...
-                Thread.sleep(200)
-          }
-        } else
-          Thread.sleep(200) //again, maybe something's still happening... 
-
-        run = false //we got something, so we only want to grab more if the EventReader has more to give us because next blocks forever...
-      }*/
-      println("DONE HERE")
     } catch {
       case ex: Exception =>
         val fmt = formatStr(packets)

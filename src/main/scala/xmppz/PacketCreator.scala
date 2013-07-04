@@ -3,6 +3,7 @@ package xmppz
 import scala.xml.pull._
 import util._
 import packet._
+
 trait BaseCreator {
 
   def getMatchers: List[PartialFunction[(String, String), (EvElemStart, Seq[Packet]) => Packet]]

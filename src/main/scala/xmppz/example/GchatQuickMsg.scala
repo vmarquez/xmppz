@@ -12,7 +12,7 @@ import packet._
 
 object GchatQuickMsg {
 
-  import packet.CorePackets._
+  import packet.CorePacket._
 
   val host = "talk.google.com"
   val port = 5222

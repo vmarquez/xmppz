@@ -1,11 +1,13 @@
 package xmppz
 import packet._
 trait Packet {
+
   def source: String = ""
+
   def children: Seq[Packet]
 
   //TODO: make tail recursive?
-  def collect[T <: Packet](pf: PartialFunction[Packet, T]): Option[T] = {
+  final def collect[T <: Packet](pf: PartialFunction[Packet, T]): Option[T] = {
     val first = children.collect(pf).headOption
     first match {
       case Some(f) => Some(f)
@@ -18,6 +20,11 @@ trait Packet {
   }
 }
 
+trait XMLPacket[T <: Packet] {
+  def toXMLString(implicit f: Packet => String): String
+}
+
+/*
 object Packet {
 
   implicit def toPacketStr[A <: Packet](p: A) = new PacketStr[A](p)
@@ -108,4 +115,4 @@ object Packet {
       }
     str
   }
-}
+}*/

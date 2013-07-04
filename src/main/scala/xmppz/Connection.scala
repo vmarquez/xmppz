@@ -17,13 +17,14 @@ import Scalaz._
 import xmppz._
 import util._
 import util.Log._
+import packet.PacketOutput
 
 //TODO: we need to fix logging so we don't blow the heap for long running stuff. List is bad...
 object Connection {
 
   val connMap = new ConcurrentHashMap[String, Connection]()
 
-  def create(p: ConnectionParams): Connection = {
+  def create(p: ConnectionParams)(implicit output: PacketOutput): Connection = {
     val incomingFunc: (List[LogMsg[Connection]], Seq[Packet]) => Unit = (logs, incomingPackets) => {
       incomingPackets.headOption.foreach(incoming(logs, _)(p.authParams.toString))
       incomingPackets.safeTail.foreach(incoming(List[LogMsg[Connection]](), _)(p.authParams.toString))
@@ -39,7 +40,7 @@ object Connection {
         println("exception in future = " + ex)
         ex.printStackTrace()
     }
-    val conn = Connection(p)
+    val conn = Connection(p = p, output = output)
     connMap.put(conn.id, conn)
     conn
   }
@@ -125,9 +126,11 @@ Thought about making Connection itself a monad instead of stacking the transform
 it itself held LogMsgs.  
 The methods all return Future[Writer[(List[LogMsg], \/[(Connection,ConnectionError),B]]] but in Transformer form it's
 EitherT[WriterT[Future...]...]
+Larsh suggested threading the connection through wtih StateT... something to consider
 */
 case class Connection(p: ConnectionParams,
-    condition: Option[PacketCondition[_ <: Packet]] = None) {
+    condition: Option[PacketCondition[_ <: Packet]] = None,
+    output: PacketOutput) {
 
   def sendGet[T <: Packet](packet: Packet)(implicit m: Manifest[T]): EitherT[WriterFuture, (Connection, ConnectionError), (Connection, T)] = {
     val promise = new ThreadlessPromise[(List[LogMsg[Connection]], \/[(Connection, ConnectionError), (Connection, T)])]
@@ -135,7 +138,8 @@ case class Connection(p: ConnectionParams,
     val packetcondition = PacketCondition(m, log, promise)
     val newconn = copy(condition = Some(packetcondition))
     Connection.connMap.put(id, newconn)
-    val packetToWrite = Packet.toXmlString(packet)
+    //val packetToWrite = Packet.toXmlString(packet)
+    val packetToWrite = p.toString
     p.plumber.write(packetToWrite)
     getTransformer(promise)
   }
@@ -157,7 +161,7 @@ case class Connection(p: ConnectionParams,
     getTransformer(promise)
   }
 
-  def send[T <: Packet](p: Packet): EitherT[WriterFuture, (Connection, ConnectionError), Connection] = send(Packet.toXmlString(p))
+  def send[T <: Packet](p: Packet): EitherT[WriterFuture, (Connection, ConnectionError), Connection] = send(p.toString) ///send(Packet.toXmlString(p))
 
   protected[xmppz] def id: String = p.authParams.toString()
 }

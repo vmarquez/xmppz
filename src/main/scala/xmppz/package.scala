@@ -6,10 +6,13 @@ import scala.concurrent.{ ExecutionContext, Future }
 import java.util.concurrent.Executors
 import scala.collection.IterableLike
 import util._
+import packet._
 
 package object xmppz {
 
   implicit val ec = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
+
+  implicit val poutput = PacketOutput(List(CorePacketXMLString.XMLString(), MessagePacketXMLString.XMLString()))
 
   //Typeclass Conversions
   implicit def FutureMonad: Monad[Future] = new Monad[Future] {
@@ -29,7 +32,7 @@ package object xmppz {
   }
 
   implicit def ListenerMonoid: Monoid[(Connection, String)] = new Monoid[(Connection, String)] {
-    def zero: (Connection, String) = (null, "Error in monoid")
+    def zero: (Connection, String) = (null, "Error in monoid") ///AAARG SCALAC I HATE THIS THIS IS YOUR FAULT SCALA!!!!
 
     def append(f1: (Connection, String), f2: => (Connection, String)): (Connection, String) = f1
   }
