@@ -8,6 +8,7 @@ import java.util.concurrent.{ Executors, CountDownLatch, TimeUnit }
 import scala.concurrent.{ ExecutionContext, Future }
 import util._
 import packet._
+import xmppz._
 
 @RunWith(classOf[JUnitRunner])
 class XMPPTest extends XMLTestHelper {
@@ -23,7 +24,8 @@ class XMPPTest extends XMLTestHelper {
   val iq = """<iq type="result" id="bind_1"/>"""
 
   test("testing message parseing") {
-    val s = Packet.toXmlString(messagePacket)
+    val s = poutput.toXMLString(messagePacket)
+    println(" s= " + s)
     if (parseString(s, (b: List[Packet]) => {
       b.collect({ case m: Message => m }).headOption.flatMap(o => o.collect({ case d: Delay => d })).map(d => true).getOrElse(false)
     }

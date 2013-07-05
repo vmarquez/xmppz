@@ -14,11 +14,12 @@ import scalaz.WriterT._
 import scalaz._
 import Scalaz._
 import packet._
+import xmppz._
 
 @RunWith(classOf[JUnitRunner])
 class ConnectionTest extends FunSuite {
 
-  implicit val ec = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
+  //implicit val ec = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
 
   val emptyLog = List[LogMsg[Connection]]()
 
@@ -31,9 +32,10 @@ class ConnectionTest extends FunSuite {
   )
 
   test("Test Basic sendGet functionality") {
+    import xmppz._
     val finishedLatch = new CountDownLatch(1)
+    val conn = Connection(getTestParams, None, poutput)
 
-    val conn = Connection(getTestParams, None)
     // format: OFF 
     val f =
       for {
@@ -61,7 +63,7 @@ class ConnectionTest extends FunSuite {
 
   test("test connection logging") {
     val finishedLatch = new CountDownLatch(1)
-    val conn = Connection(getTestParams, None)
+    val conn = Connection(getTestParams, None, poutput)
         // format: OFF
         val cont = 
         for {

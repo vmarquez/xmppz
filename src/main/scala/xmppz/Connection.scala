@@ -2,9 +2,7 @@ package xmppz
 
 import scala.concurrent._
 import scala.io.Source
-import java.util.concurrent.{ LinkedBlockingQueue, ConcurrentHashMap, Executors }
-import collection.JavaConversions._
-import scala.collection.SeqLike
+import java.util.concurrent.{ ConcurrentHashMap }
 import java.io._
 import scala.collection._
 import scalaz.effect.IO
@@ -126,7 +124,6 @@ Thought about making Connection itself a monad instead of stacking the transform
 it itself held LogMsgs.  
 The methods all return Future[Writer[(List[LogMsg], \/[(Connection,ConnectionError),B]]] but in Transformer form it's
 EitherT[WriterT[Future...]...]
-Larsh suggested threading the connection through wtih StateT... something to consider
 */
 case class Connection(p: ConnectionParams,
     condition: Option[PacketCondition[_ <: Packet]] = None,
@@ -138,8 +135,7 @@ case class Connection(p: ConnectionParams,
     val packetcondition = PacketCondition(m, log, promise)
     val newconn = copy(condition = Some(packetcondition))
     Connection.connMap.put(id, newconn)
-    //val packetToWrite = Packet.toXmlString(packet)
-    val packetToWrite = p.toString
+    val packetToWrite = output.toXMLString(packet)
     p.plumber.write(packetToWrite)
     getTransformer(promise)
   }
@@ -161,7 +157,7 @@ case class Connection(p: ConnectionParams,
     getTransformer(promise)
   }
 
-  def send[T <: Packet](p: Packet): EitherT[WriterFuture, (Connection, ConnectionError), Connection] = send(p.toString) ///send(Packet.toXmlString(p))
+  def send[T <: Packet](p: Packet): EitherT[WriterFuture, (Connection, ConnectionError), Connection] = send(output.toXMLString(p)) ///send(Packet.toXmlString(p))
 
   protected[xmppz] def id: String = p.authParams.toString()
 }
