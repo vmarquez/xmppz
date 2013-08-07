@@ -25,7 +25,6 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
   private val xmlEventListener = new XMLEventReader(Source.fromInputStream(inputStream))
   private var xmlevents = List[XMLEvent]()
   private val parser = XMLParser(elemCreator, true)
-  private var run = true
 
   def shutdown(): Unit = {
     inputStream.close()
@@ -45,7 +44,6 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
       val arr = buf.readBytes(readablebytes).array()
       outputStream.write(arr)
       outputStream.flush()
-      run = true
 
       incomingData = new String(arr)
       println("incoming data =" + incomingData)
@@ -53,7 +51,8 @@ class EventDecoder[T](elemCreator: ElemCreator[T]) extends FrameDecoder {
       logs = logs :+ Log[Connection]("TRACE", incomingData)
       val t = PacketReader(xmlevents, xmlEventListener, parser)
       xmlevents = t._1
-      packets = packets ::: t._2
+      //packets = packets ::: t._2
+      packets = t._2
 
     } catch {
       case ex: Exception =>

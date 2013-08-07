@@ -14,10 +14,7 @@ object PacketOutput {
     val f = li.foldLeft(PartialFunction.empty[Packet, String => String])(_ orElse _) orElse unknown
 
     def toXMLString(p: Packet): String = {
-      println("packet = " + p.children)
-
       val children: String = p.children.map(toXMLString(_)).foldLeft("")(_ + _)
-      println("  packet children = " + children)
       f(p)(children)
     }
   }
